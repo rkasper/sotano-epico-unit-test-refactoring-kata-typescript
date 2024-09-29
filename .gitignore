@@ -10,3 +10,4 @@ yarn-error.log*
 
 .vscode/*
 /catalog.db
+/test_catalog.db
