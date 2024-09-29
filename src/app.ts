@@ -11,66 +11,67 @@ export function createApp(dbPath: string = "catalog.db"): Application {
     const app = new Application();
     const router = new Router();
 
-    // Add a new artist
-    router.post("/artist", async (ctx) => {
-        const body = ctx.request.body;
-        if (body.type() === "json") {
-            const jsonData = await body.json();
-            const name = jsonData.name;
-            const genre = jsonData.genre;
-            db.query("INSERT INTO artists (name, genre) VALUES (?, ?)", [name, genre]);
-            ctx.response.status = 201;
-            ctx.response.body = { message: "Artist added successfully" };
-        }
-    });
+    router
+        // Add a new artist
+        .post("/artist", async (ctx) => {
+            const body = ctx.request.body;
+            if (body.type() === "json") {
+                const jsonData = await body.json();
+                const name = jsonData.name;
+                const genre = jsonData.genre;
+                db.query("INSERT INTO artists (name, genre) VALUES (?, ?)", [name, genre]);
+                ctx.response.status = 201;
+                ctx.response.body = { message: "Artist added successfully" };
+            }
+        })
 
-    // Get artist information
-    router.get("/artist/:id", (ctx) => {
-        const id = ctx.params.id;
-        const [artist] = db.query("SELECT * FROM artists WHERE id = ?", [id]);
-        if (artist) {
-            ctx.response.body = {
-                id: artist[0],
-                name: artist[1],
-                genre: artist[2],
-            };
-        } else {
-            ctx.response.status = 404;
-        }
-    });
+        // Get artist information
+        .get("/artist/:id", (ctx) => {
+            const id = ctx.params.id;
+            const [artist] = db.query("SELECT * FROM artists WHERE id = ?", [id]);
+            if (artist) {
+                ctx.response.body = {
+                    id: artist[0],
+                    name: artist[1],
+                    genre: artist[2],
+                };
+            } else {
+                ctx.response.status = 404;
+            }
+        })
 
-    // Add a new album
-    router.post("/album", async (ctx) => {
-        const body = ctx.request.body;
-        if (body.type() === "json") {
-            const jsonData = await body.json();
-            const artistId = jsonData.artist_id;
-            const title = jsonData.title;
-            const releaseYear = jsonData.release_year;
-            db.query(
-                "INSERT INTO albums (artist_id, title, release_year) VALUES (?, ?, ?)",
-                [artistId, title, releaseYear]
-            );
-            ctx.response.status = 201;
-            ctx.response.body = { message: "Album added successfully" };
-        }
-    });
+        // Add a new album
+        .post("/album", async (ctx) => {
+            const body = ctx.request.body;
+            if (body.type() === "json") {
+                const jsonData = await body.json();
+                const artistId = jsonData.artist_id;
+                const title = jsonData.title;
+                const releaseYear = jsonData.release_year;
+                db.query(
+                    "INSERT INTO albums (artist_id, title, release_year) VALUES (?, ?, ?)",
+                    [artistId, title, releaseYear]
+                );
+                ctx.response.status = 201;
+                ctx.response.body = { message: "Album added successfully" };
+            }
+        })
 
-    // Get album information
-    router.get("/album/:id", (ctx) => {
-        const id = ctx.params.id;
-        const [album] = db.query("SELECT * FROM albums WHERE id = ?", [id]);
-        if (album) {
-            ctx.response.body = {
-                id: album[0],
-                artist_id: album[1],
-                title: album[2],
-                release_year: album[3],
-            };
-        } else {
-            ctx.response.status = 404;
-        }
-    });
+        // Get album information
+        .get("/album/:id", (ctx) => {
+            const id = ctx.params.id;
+            const [album] = db.query("SELECT * FROM albums WHERE id = ?", [id]);
+            if (album) {
+                ctx.response.body = {
+                    id: album[0],
+                    artist_id: album[1],
+                    title: album[2],
+                    release_year: album[3],
+                };
+            } else {
+                ctx.response.status = 404;
+            }
+        });
 
     app.use(router.routes());
     app.use(router.allowedMethods());
